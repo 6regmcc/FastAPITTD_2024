@@ -1,0 +1,20 @@
+version: '3.9'
+
+services:
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8080:8080"
+
+  dev-db:
+      image: postgres:16.4-alpine3.20
+      restart: always
+      env_file:
+        - ./.env
+      ports:
+        - "5433:5432"
+      volumes:
+        - ./scripts:/docker-entrypoint-initdb.d
+
