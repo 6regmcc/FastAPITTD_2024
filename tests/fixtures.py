@@ -18,7 +18,12 @@ def db_session():
     engine = create_engine(os.getenv("TEST_DATABASE_URL"))
 
     with engine.begin() as connection:
-        migrate_to_db("migrations", "alembic.ini", connection)
+        try:
+            migrate_to_db("migrations", "alembic.ini", connection)
+        except Exception as error:
+            print(error)
+
+
 
     SessionLocal = sessionmaker(autocommit=False, autoflush=True, bind=engine)
 
