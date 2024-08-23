@@ -13,3 +13,4 @@ alembic init migrations
 alembic revision --autogenerate -m "inital"
 alembic -n devdb revision --autogenerate -m "inital"
 alembic -n devdb upgrade head
+clea
