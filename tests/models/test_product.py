@@ -63,7 +63,7 @@ def test_model_structure_nullable_constraints(db_inspector):
         "is_active": False,
         "stock_status": False,
         "category_id": False,
-        "seasonal_events": True,
+        "seasonal_event": True,
     }
 
     for column in columns:
@@ -97,7 +97,7 @@ def test_model_structure_default_values(db_inspector):
 
     assert columns["is_digital"]["default"] == "false"
     assert columns["is_active"]["default"] == "false"
-    assert columns["stock_status"]["default"] == "oos::status_enum"
+    assert columns["stock_status"]["default"] == "'oos'::status_enum"
 
 
 """

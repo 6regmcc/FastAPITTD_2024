@@ -11,7 +11,8 @@ from sqlalchemy import(
     DateTime,
     text,
     Enum,
-ForeignKey
+ForeignKey,
+UUID
 )
 
 
@@ -37,6 +38,7 @@ class Product(Base):
     __tablename__ = "product"
 
     id = Column(Integer, primary_key=True, nullable=False)
+    pid = Column(UUID, nullable=False)
     name = Column(String(200), nullable=False)
     slug = Column(String(220), nullable=False)
     description = Column(Text, nullable=True)
@@ -44,9 +46,9 @@ class Product(Base):
     created_at = Column(DateTime, server_default=text("CURRENT_TIMESTAMP"), onupdate=sqlalchemy.func.now(), nullable=False)
     updated_at = Column(DateTime, server_default=text("CURRENT_TIMESTAMP"),  nullable=False)
     is_active = Column(Boolean, nullable=False, default=False, server_default="False")
-    #stock_status = Column(Enum("oos", "is", "obo", name="status_enum"), server_default="oos", nullable=False)
+    stock_status = Column(Enum("oos", "is", "obo", name="status_enum"), server_default="oos", nullable=False)
     category_id = Column(Integer, ForeignKey("category.id"), nullable=False)
-    seasonal_id = Column(Integer,  nullable=True)
+    seasonal_event = Column(Integer,  nullable=True)
 
     __table_args__ = (
         CheckConstraint("LENGTH(name) > 0", name="product_name_length_check"),

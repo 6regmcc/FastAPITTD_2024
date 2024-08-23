@@ -1,8 +1,8 @@
 """inital
 
-Revision ID: db3bc9679238
+Revision ID: 858384115102
 Revises: 
-Create Date: 2024-08-23 20:55:31.920437
+Create Date: 2024-08-23 21:10:01.781209
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'db3bc9679238'
+revision: str = '858384115102'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -36,6 +36,7 @@ def upgrade() -> None:
     )
     op.create_table('product',
     sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('pid', sa.UUID(), nullable=False),
     sa.Column('name', sa.String(length=200), nullable=False),
     sa.Column('slug', sa.String(length=220), nullable=False),
     sa.Column('description', sa.Text(), nullable=True),
@@ -43,8 +44,9 @@ def upgrade() -> None:
     sa.Column('created_at', sa.DateTime(), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=False),
     sa.Column('updated_at', sa.DateTime(), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=False),
     sa.Column('is_active', sa.Boolean(), server_default='False', nullable=False),
+    sa.Column('stock_status', sa.Enum('oos', 'is', 'obo', name='status_enum'), server_default='oos', nullable=False),
     sa.Column('category_id', sa.Integer(), nullable=False),
-    sa.Column('seasonal_id', sa.Integer(), nullable=True),
+    sa.Column('seasonal_event', sa.Integer(), nullable=True),
     sa.CheckConstraint('LENGTH(name) > 0', name='product_name_length_check'),
     sa.CheckConstraint('LENGTH(slug) > 0', name='product_slug_length_check'),
     sa.ForeignKeyConstraint(['category_id'], ['category.id'], ),
