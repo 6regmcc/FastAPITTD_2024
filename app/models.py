@@ -12,7 +12,9 @@ from sqlalchemy import(
     text,
     Enum,
 ForeignKey,
-UUID
+UUID,
+DECIMAL,
+Float
 )
 
 
@@ -57,3 +59,37 @@ class Product(Base):
         UniqueConstraint("slug", name="uq_product_slug")
     )
 
+class ProductLine(Base):
+    __tablename__ = "product_line"
+
+    id = Column(Integer, primary_key=True, nullable=False)
+    price = Column(DECIMAL(5, 2), nullable=False)
+    sku = Column(
+        UUID(as_uuid=True),
+        nullable=False,
+        server_default=text("uuid_generate_v4()"),
+    )
+    stock_qty = Column(Integer, nullable=False, default=0, server_default="0")
+    is_active = Column(Boolean, nullable=False, default=False, server_default="False")
+    order = Column(Integer, nullable=False)
+    weight = Column(
+        Float,
+        nullable=False,
+    )
+    created_at = Column(
+        DateTime, server_default=text("CURRENT_TIMESTAMP"), nullable=False
+    )
+    product_id = Column(Integer, ForeignKey("product.id"), nullable=False)
+
+    __table_args__ = (
+        CheckConstraint(
+            "price >= 0 AND price <= 999.99", name="product_line_max_value"
+        ),
+        CheckConstraint(
+            '"order" >= 1 AND "order" <= 20', name="product_order_line_range"
+        ),
+        UniqueConstraint(
+            "order", "product_id", name="uq_product_line_order_product_id"
+        ),
+        UniqueConstraint("sku", name="uq_product_line_sku"),
+    )
