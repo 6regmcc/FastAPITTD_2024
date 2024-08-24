@@ -12,5 +12,6 @@ docker-compose up
 alembic init migrations
 alembic revision --autogenerate -m "inital"
 alembic -n devdb revision --autogenerate -m "inital"
+alembic -n testdb revision --autogenerate -m "inital"
 alembic -n devdb upgrade head
 clea
