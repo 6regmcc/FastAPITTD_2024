@@ -1,8 +1,8 @@
 """inital
 
-Revision ID: a246bea24ebd
+Revision ID: af143cd8a07f
 Revises: 
-Create Date: 2024-08-24 13:10:50.100709
+Create Date: 2024-08-24 13:22:52.883363
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'a246bea24ebd'
+revision: str = 'af143cd8a07f'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -34,6 +34,15 @@ def upgrade() -> None:
     sa.UniqueConstraint('name', 'level', name='uq_category_name_level'),
     sa.UniqueConstraint('slug', name='uq_category_slug')
     )
+    op.create_table('seasonal_event',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('start_date', sa.DateTime(), nullable=False),
+    sa.Column('end_date', sa.DateTime(), nullable=False),
+    sa.Column('name', sa.String(length=100), nullable=False),
+    sa.CheckConstraint('LENGTH(name) > 0', name='seasonal_event_name_length_check'),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('name', name='uq_seasonal_event_name')
+    )
     op.create_table('product',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('pid', sa.UUID(), nullable=False),
@@ -50,6 +59,7 @@ def upgrade() -> None:
     sa.CheckConstraint('LENGTH(name) > 0', name='product_name_length_check'),
     sa.CheckConstraint('LENGTH(slug) > 0', name='product_slug_length_check'),
     sa.ForeignKeyConstraint(['category_id'], ['category.id'], ),
+    sa.ForeignKeyConstraint(['seasonal_event'], ['seasonal_event.id'], ),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('name', name='uq_product_name_level'),
     sa.UniqueConstraint('slug', name='uq_product_slug')
@@ -92,5 +102,6 @@ def downgrade() -> None:
     op.drop_table('product_image')
     op.drop_table('product_line')
     op.drop_table('product')
+    op.drop_table('seasonal_event')
     op.drop_table('category')
     # ### end Alembic commands ###

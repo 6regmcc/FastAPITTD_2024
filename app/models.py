@@ -1,6 +1,6 @@
 from .db_connection import Base
 import sqlalchemy
-from sqlalchemy import(
+from sqlalchemy import (
     Column,
     Integer,
     String,
@@ -11,10 +11,10 @@ from sqlalchemy import(
     DateTime,
     text,
     Enum,
-ForeignKey,
-UUID,
-DECIMAL,
-Float
+    ForeignKey,
+    UUID,
+    DECIMAL,
+    Float
 )
 
 
@@ -45,12 +45,13 @@ class Product(Base):
     slug = Column(String(220), nullable=False)
     description = Column(Text, nullable=True)
     is_digital = Column(Boolean, nullable=False, server_default="False")
-    created_at = Column(DateTime, server_default=text("CURRENT_TIMESTAMP"), onupdate=sqlalchemy.func.now(), nullable=False)
-    updated_at = Column(DateTime, server_default=text("CURRENT_TIMESTAMP"),  nullable=False)
+    created_at = Column(DateTime, server_default=text("CURRENT_TIMESTAMP"), onupdate=sqlalchemy.func.now(),
+                        nullable=False)
+    updated_at = Column(DateTime, server_default=text("CURRENT_TIMESTAMP"), nullable=False)
     is_active = Column(Boolean, nullable=False, default=False, server_default="False")
     stock_status = Column(Enum("oos", "is", "obo", name="status_enum"), server_default="oos", nullable=False)
     category_id = Column(Integer, ForeignKey("category.id"), nullable=False)
-    seasonal_event = Column(Integer,  nullable=True)
+    seasonal_event = Column(Integer, ForeignKey("seasonal_event.id"), nullable=True)
 
     __table_args__ = (
         CheckConstraint("LENGTH(name) > 0", name="product_name_length_check"),
@@ -58,6 +59,7 @@ class Product(Base):
         UniqueConstraint("name", name="uq_product_name_level"),
         UniqueConstraint("slug", name="uq_product_slug")
     )
+
 
 class ProductLine(Base):
     __tablename__ = "product_line"
@@ -95,7 +97,6 @@ class ProductLine(Base):
     )
 
 
-
 class ProductImage(Base):
     __tablename__ = "product_image"
 
@@ -119,3 +120,19 @@ class ProductImage(Base):
         ),
     )
 
+
+class SeasonalEvent(Base):
+    __tablename__ = "seasonal_event"
+
+    id = Column(Integer, primary_key=True, nullable=False)
+    start_date = Column(DateTime, nullable=False)
+    end_date = Column(DateTime, nullable=False)
+    name = Column(String(100), nullable=False)
+
+    __table_args__ = (
+        CheckConstraint(
+            "LENGTH(name) > 0",
+            name="seasonal_event_name_length_check",
+        ),
+        UniqueConstraint("name", name="uq_seasonal_event_name"),
+    )

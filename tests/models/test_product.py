@@ -125,3 +125,19 @@ def test_model_structure_unique_constraints(db_inspector):
     assert any(constraint["name"] == "uq_product_name_level" for constraint in constraints)
     assert any(constraint["name"] == "uq_product_slug" for constraint in constraints)
 
+
+
+"""
+- [ ] Ensure that column foreign keys correctly defined.
+"""
+
+
+def test_model_structure_foreign_key(db_inspector):
+    table = "product"
+    foreign_keys = db_inspector.get_foreign_keys(table)
+    print(foreign_keys)
+    product_foreign_key = next(
+        (fk for fk in foreign_keys if set(fk["constrained_columns"]) == {"seasonal_event"}),
+        None,
+    )
+    assert product_foreign_key is not None
