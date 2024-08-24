@@ -1,8 +1,8 @@
 """inital
 
-Revision ID: b9f7982ea276
+Revision ID: a1f81b708e98
 Revises: 
-Create Date: 2024-08-24 13:29:31.013183
+Create Date: 2024-08-24 14:27:54.813068
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'b9f7982ea276'
+revision: str = 'a1f81b708e98'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -42,6 +42,16 @@ def upgrade() -> None:
     sa.UniqueConstraint('name', 'level', name='uq_category_name_level'),
     sa.UniqueConstraint('slug', name='uq_category_slug')
     )
+    op.create_table('product_type',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('name', sa.String(length=100), nullable=False),
+    sa.Column('level', sa.Integer(), nullable=False),
+    sa.Column('parent_id', sa.Integer(), nullable=True),
+    sa.CheckConstraint('LENGTH(name) > 0', name='product_type_name_length_check'),
+    sa.ForeignKeyConstraint(['parent_id'], ['product_type.id'], ),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('name', 'level', name='uq_product_type_name_level')
+    )
     op.create_table('seasonal_event',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('start_date', sa.DateTime(), nullable=False),
@@ -50,6 +60,15 @@ def upgrade() -> None:
     sa.CheckConstraint('LENGTH(name) > 0', name='seasonal_event_name_length_check'),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('name', name='uq_seasonal_event_name')
+    )
+    op.create_table('attribute_value',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('attribute_value', sa.String(length=100), nullable=False),
+    sa.Column('attribute_id', sa.Integer(), nullable=False),
+    sa.CheckConstraint('LENGTH(attribute_value) > 0', name='attribute_value_name_length_check'),
+    sa.ForeignKeyConstraint(['attribute_id'], ['attribute.id'], ),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('attribute_value', 'attribute_id', name='uq_attribute_value_attribute_id')
     )
     op.create_table('product',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -110,7 +129,9 @@ def downgrade() -> None:
     op.drop_table('product_image')
     op.drop_table('product_line')
     op.drop_table('product')
+    op.drop_table('attribute_value')
     op.drop_table('seasonal_event')
+    op.drop_table('product_type')
     op.drop_table('category')
     op.drop_table('attribute')
     # ### end Alembic commands ###
