@@ -131,7 +131,7 @@ def test_model_structure_unique_constraints(db_inspector):
 - [ ] Ensure that column foreign keys correctly defined.
 """
 
-
+#rewrite this to check for both foreign keys
 def test_model_structure_foreign_key(db_inspector):
     table = "product"
     foreign_keys = db_inspector.get_foreign_keys(table)
