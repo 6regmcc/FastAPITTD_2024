@@ -1,17 +1,13 @@
-from fastapi import FastAPI
 import logging
 import logging.config
 
+from fastapi import FastAPI
 
-logging.config.fileConfig("./logging.conf", disable_existing_loggers=False)
+from app.routers import category_routes
+
+logging.config.fileConfig("logging.conf", disable_existing_loggers=False)
+
 logger = logging.getLogger(__name__)
 
 app = FastAPI()
-
-
-
-@app.get("/hello")
-def hello():
-    logger.error('test error')
-    return {"Hello": "How are you doing?"}
-
+app.include_router(category_routes.router, prefix="/api/category", tags=["Category"])
