@@ -14,5 +14,5 @@ class CategoryCreate(CategoryBase):
     pass
 
 
-class CategoryInDB(CategoryBase):
+class CategoryReturn(CategoryBase):
     id: int

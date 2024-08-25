@@ -7,7 +7,7 @@ DEV_DATABASE_URL = os.getenv("DEV_DATABASE_URL")
 
 engine = create_engine(DEV_DATABASE_URL)
 
-SessionLocal = sessionmaker(autocommit=False, autoflush=True, bind=True)
+SessionLocal = sessionmaker(autocommit=False, autoflush=True, bind=engine)
 Base = declarative_base()
 
 
