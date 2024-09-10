@@ -95,8 +95,6 @@ def test_unit_get_all_categories_successfully(client, monkeypatch):
     assert response.json() == category
 
 
-
-
 def test_unit_get_category_all_with_internal_server_error(client, monkeypatch):
     category = get_random_category_dict()
 
@@ -106,4 +104,31 @@ def test_unit_get_category_all_with_internal_server_error(client, monkeypatch):
     monkeypatch.setattr("sqlalchemy.orm.Query.all", mock_create_category_exception)
 
     response = client.get("/api/category")
+    assert response.status_code == 500
+
+
+@pytest.mark.parametrize("category", [get_random_category_dict() for _ in range(3)])
+def test_unit_get_single_category_successfully(client, monkeypatch, category):
+    monkeypatch.setattr("sqlalchemy.orm.Query.first", mock_output(category))
+    response = client.get(f"api/category/slug/{category['slug']}")
+    assert response.status_code == 200
+    assert response.json() == category
+
+
+@pytest.mark.parametrize("category", [get_random_category_dict() for _ in range(3)])
+def test_unit_get_single_category_not_found(client, monkeypatch, category):
+    monkeypatch.setattr("sqlalchemy.orm.Query.first", mock_output())
+    response = client.get(f"api/category/slug/{category['slug']}")
+    assert response.status_code == 404
+    assert response.json() == { "detail": "Category does not exist"}
+
+
+@pytest.mark.parametrize("category", [get_random_category_dict() for _ in range(3)])
+def test_unit_get_single_category_with_internal_server_error(
+        client, monkeypatch, category
+):
+    def mock_create_category_exception(*args, **kwargs):
+        raise Exception("Internal server error")
+    monkeypatch.setattr("sqlalchemy.orm.Query.first", mock_create_category_exception)
+    response = client.get(f"api/category/slug/{category['slug']}")
     assert response.status_code == 500
